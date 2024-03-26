@@ -1,0 +1,6 @@
+[galaxy]
+server_list = community
+
+[galaxy_server.community]
+url=https://automationhub.alltech.solucoes/api/galaxy/content/community/
+token=5d7b4fa71181e0f0dd03c99c9f58c012eb805de1
