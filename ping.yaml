@@ -1,9 +1,0 @@
----
-- hosts: all
-  gather_facts: False
-  connection: local
- 
-  tasks:
-    - name: Check directory
-      ansible.builtin.shell: ls -lah
-      chdir: /tmp
