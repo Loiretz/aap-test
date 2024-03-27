@@ -13,7 +13,26 @@
     rhsm_activation_key: MY_ACTIVATION_KEY
 
   tasks:
-    - name: Download Red Hat GPG key
+    - name: Check if resolv.conf file exists
+      ansible.bultin.stat:
+        path: /etc/resolv.conf
+      register: file_info
+
+    - name: Create /etc/resolv.conf if it exists
+      ansible.bultin.file:
+        path: /etc/resolv.conf
+        state: touch
+      when: not file_info.stat.exists
+
+    - name: Set DNS nameservers in /etc/resolv.conf
+      blockinfile:
+        path: /etc/resolv.conf
+        block: |
+            search example.com
+            nameserver 8.8.8.8
+            nameserver 8.8.4.4
+
+    - name: Check resolv.conf
       ansible.builtin.command: cat /etc/resolv.conf
 
     - name: Generate pre-conversion analysis report
