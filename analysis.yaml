@@ -38,3 +38,7 @@
     - name: Generate pre-conversion analysis report
       ansible.builtin.import_role:
         name: infra.convert2rhel.analysis
+   
+    - name: display report convert2rhel
+      ansible.builtin.debug:
+        msg: "{{ lookup('ansible.builtin.file', '/var/log/convert2rhel/convert2rhel-pre-conversion.txt') }}"
