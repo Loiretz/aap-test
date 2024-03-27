@@ -14,18 +14,18 @@
 
   tasks:
     - name: Check if resolv.conf file exists
-      ansible.bultin.stat:
+      ansible.builtin.stat:
         path: /etc/resolv.conf
       register: file_info
 
     - name: Create /etc/resolv.conf if it exists
-      ansible.bultin.file:
+      ansible.builtin.file:
         path: /etc/resolv.conf
         state: touch
       when: not file_info.stat.exists
 
     - name: Set DNS nameservers in /etc/resolv.conf
-      blockinfile:
+      ansible.builtin.blockinfile:
         path: /etc/resolv.conf
         block: |
             search example.com
