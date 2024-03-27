@@ -13,6 +13,12 @@
     rhsm_activation_key: MY_ACTIVATION_KEY
 
   tasks:
+    - name: Download Red Hat GPG key
+      ansible.builtin.get_url:
+        url:  https://www.redhat.com/security/data/fd431d51.txt
+        dest: "/etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release"
+        mode: '0644'
+
     - name: Generate pre-conversion analysis report
       ansible.builtin.import_role:
         name: infra.convert2rhel.analysis
