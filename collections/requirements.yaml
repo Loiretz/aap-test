@@ -1,0 +1,6 @@
+---
+collections:
+  # Install a collection from Ansible Galaxy.
+  - name: infra.convert2rhel
+    version: ">=1.0.0"
+    source: https://galaxy.ansible.com
