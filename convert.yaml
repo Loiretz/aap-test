@@ -10,6 +10,14 @@
     rhsm_org: MY_ORG
     rhsm_activation_key: MY_ACTIVATION_KEY
 
+  roles:
+    - role: configure-dns
+
+    - role: update-system
+
+    - role: oracle-linux-specific
+      when: ansible_facts['distribution'] == "OracleLinux"
+
   tasks:
     - name: Perform OS conversion
       ansible.builtin.import_role:
