@@ -1,0 +1,17 @@
+---
+- name: Analysis
+  hosts: all
+  strategy: free
+  gather_facts: true
+  become: true
+  force_handlers: true
+
+  roles:
+    - role: configure-dns
+
+    - role: update-system
+
+    - role: oracle-linux-specific
+      when: ansible_facts['distribution'] == "OracleLinux"
+
+    - role: reboot 

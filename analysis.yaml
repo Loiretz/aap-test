@@ -15,14 +15,7 @@
   roles:
     - role: configure-dns
 
-    - role: update-system
-
-    - role: oracle-linux-specific
-      when: ansible_facts['distribution'] == "OracleLinux"
-
   tasks:
-    - name: Check resolv.conf
-      ansible.builtin.command: cat /etc/resolv.conf
 
     - name: Generate pre-conversion analysis report
       ansible.builtin.import_role:
