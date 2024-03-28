@@ -5,6 +5,9 @@
   become: true
   force_handlers: true
 
+  vars:
+    convert_convert2rhel_opts: "--auto-attach"
+
   tasks:
     - name: Perform OS conversion
       ansible.builtin.import_role:
