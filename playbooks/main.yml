@@ -1,0 +1,21 @@
+---
+- hosts: all
+  roles:
+
+    - role: hardcode-eus-version-repos
+      when: >
+        (ansible_facts['distribution_version'] ==  "8.6"
+        or ansible_facts['distribution_version'] ==  "8.8")
+        and (ansible_facts['distribution'] == "AlmaLinux"
+        or ansible_facts['distribution'] == "Rocky")
+
+    - role: update-system
+
+    - role: oracle-linux-specific
+      when: ansible_facts['distribution'] == "OracleLinux"
+
+    - role: packaging
+
+    - role: install-testing-deps
+
+    - role: update-ca-trust

@@ -10,6 +10,9 @@
     rhsm_activation_key: ""
     rhsm_org: ""
 
+  roles:
+    - role: configure-dns
+
   tasks:
     - name: Perform OS conversion
       ansible.builtin.import_role:
