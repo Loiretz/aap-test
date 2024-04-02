@@ -1,0 +1,44 @@
+---
+- name: Convert
+  hosts: all
+  strategy: free
+  become: true
+
+  vars:
+    convert_convert2rhel_opts: "--auto-attach"
+    rhsm_activation_key: ""
+    rhsm_org: ""
+
+  roles:
+    - role: configure-dns
+
+  tasks:
+    - name: Remove libvirt-daemon and dependencies
+      ansible.builtin.shell: for i in $(rpm -qa |grep libvirt); do yum remove -y $i; done
+      register: packages_removed
+
+    - name: Display removed packages
+      ansible.builtin.debug:
+        var: packages_removed.stdout_lines
+
+    - name: Cleanup packages duplicates
+      ansible.builtin.shell: package-cleanup -y --cleandupes
+      register: packages_duplicates
+
+    - name: Display removed duplicates packages
+      ansible.builtin.debug:
+        var: packages_duplicates.stdout_lines
+  
+    - name: Upgrade all packages
+      ansible.builtin.yum:
+        name: '*'
+        state: latest
+
+    - name: Run convert2RHEL for 8 major version
+      ansible.builtin.shell: convert2rhel -y -c /etc/convert2rhel.ini --auto-attach --eus
+      when: ansible_facts['distribution_major_version'] == "8") 
+
+    - name: Run convert2RHEL for 7 major version
+      ansible.builtin.shell: convert2rhel -y -c /etc/convert2rhel.ini --auto-attach
+      when: ansible_facts['distribution_major_version'] == "7") 
+

@@ -1,0 +1,18 @@
+---
+- name: Convert to RHEL - major version 7
+  hosts: all
+  strategy: free
+  become: true
+
+  roles:
+    - role: configure-dns
+
+  tasks:
+    - name: Add convert2rhel.ini file
+      ansible.builtin.template:
+        src: convert2rhel.ini.j2
+        dest: /tmp/convert2rhel.ini
+        mode: 0600
+
+    - name: Run convert2RHEL for 7 major version
+      ansible.builtin.shell: convert2rhel -y -c /tmp/convert2rhel.ini --auto-attach
