@@ -4,6 +4,10 @@
   strategy: free
   become: true
 
+  vars:
+    rhsm_username: ""
+    rhsm_password: ""
+
   roles:
     - role: configure-dns
 
