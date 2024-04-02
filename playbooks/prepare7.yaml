@@ -38,6 +38,9 @@
         name: convert2rhel
         state: present
 
+    - name: Clean duplicates packages
+      ansible.builtin.shell: package-cleanup -y --cleandupes
+
     - name: Set default kernel
       ansible.builtin.shell: grubby --set-default /boot/vmlinuz-`rpm -q --qf "%{BUILDTIME}\t%{EVR}.%{ARCH}\n" kernel | sort -nr | head -1 | cut -f2`
 
