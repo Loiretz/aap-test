@@ -35,7 +35,7 @@
 
     - name: Install Convert2RHEL
       ansible.builtin.yum:
-        name: kernel-3.10.0-1160.114.2.0.1.el7
+        name: convert2rhel
         state: present
 
     - name: Set default kernel
