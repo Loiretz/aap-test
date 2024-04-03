@@ -1,7 +1,6 @@
 ---
 - name: Prepare to convert major version 7
   hosts: all
-  strategy: free
   become: true
 
   roles:
@@ -40,6 +39,9 @@
 
     - name: Clean duplicates packages
       ansible.builtin.shell: package-cleanup -y --cleandupes
+
+  - name: Complete and cleanup yum transactions
+      ansible.builtin.shell: yum-complete-transaction --cleanup-only
 
     - name: Set default kernel
       ansible.builtin.shell: grubby --set-default /boot/vmlinuz-`rpm -q --qf "%{BUILDTIME}\t%{EVR}.%{ARCH}\n" kernel | sort -nr | head -1 | cut -f2`
