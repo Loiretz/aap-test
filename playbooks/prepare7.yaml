@@ -40,7 +40,7 @@
     - name: Clean duplicates packages
       ansible.builtin.shell: package-cleanup -y --cleandupes
 
-  - name: Complete and cleanup yum transactions
+    - name: Complete and cleanup yum transactions
       ansible.builtin.shell: yum-complete-transaction --cleanup-only
 
     - name: Set default kernel
