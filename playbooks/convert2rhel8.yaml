@@ -1,12 +1,31 @@
 ---
-- name: Prepare to convert major version 7
+- name: Prepare to convert major version 8
   hosts: all
   become: true
 
-  roles:
-    - role: configure-dns
+  vars:
+    rhsm_username: ""
+    rhsm_password: ""
 
   tasks:
+    - name: Check if resolv.conf file exists
+      ansible.builtin.stat:
+        path: /etc/resolv.conf
+      register: file_info
+
+    - name: Create /etc/resolv.conf if it exists
+      ansible.builtin.file:
+        path: /etc/resolv.conf
+        state: touch
+      when: not file_info.stat.exists
+
+    - name: Set DNS nameservers in /etc/resolv.conf
+      ansible.builtin.blockinfile:
+        path: /etc/resolv.conf
+        block: |
+            nameserver 8.8.8.8
+            nameserver 8.8.4.4
+
     - name: Upgrade all packages
       ansible.builtin.yum:
         name: '*'
@@ -29,7 +48,7 @@
 
     - name: Download a repository definition
       ansible.builtin.get_url:
-        url: https://ftp.redhat.com/redhat/convert2rhel/7/convert2rhel.repo
+        url: https://ftp.redhat.com/redhat/convert2rhel/8/convert2rhel.repo
         dest: /etc/yum.repos.d/convert2rhel.repo
 
     - name: Install Convert2RHEL
@@ -42,6 +61,9 @@
 
     - name: Complete and cleanup yum transactions
       ansible.builtin.shell: yum-complete-transaction --cleanup-only
+
+    - name: Config firewalld module
+      ansible.builtin.shell: sed -i -- 's/^CleanupModulesOnExit.*/CleanupModulesOnExit=no/g' /etc/firewalld/firewalld.conf && firewall-cmd --reload
 
     - name: Set default kernel
       ansible.builtin.shell: grubby --set-default /boot/vmlinuz-`rpm -q --qf "%{BUILDTIME}\t%{EVR}.%{ARCH}\n" kernel | sort -nr | head -1 | cut -f2`
@@ -65,3 +87,12 @@
         timeout: 300
       when: not back_again2.changed
       register: back_again3
+
+    - name: Add convert2rhel.ini file
+      ansible.builtin.template:
+        src: convert2rhel.ini.j2
+        dest: /tmp/convert2rhel.ini
+        mode: 0600
+
+    - name: Run convert2RHEL for 8 major version
+      ansible.builtin.shell: convert2rhel -y -c /tmp/convert2rhel.ini --auto-attach --eus

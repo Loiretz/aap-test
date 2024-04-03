@@ -1,0 +1,95 @@
+---
+- name: Prepare to convert major version 7
+  hosts: all
+  become: true
+
+  vars:
+    rhsm_username: ""
+    rhsm_password: ""
+
+  tasks:
+    - name: Check if resolv.conf file exists
+      ansible.builtin.stat:
+        path: /etc/resolv.conf
+      register: file_info
+
+    - name: Create /etc/resolv.conf if it exists
+      ansible.builtin.file:
+        path: /etc/resolv.conf
+        state: touch
+      when: not file_info.stat.exists
+
+    - name: Set DNS nameservers in /etc/resolv.conf
+      ansible.builtin.blockinfile:
+        path: /etc/resolv.conf
+        block: |
+            nameserver 8.8.8.8
+            nameserver 8.8.4.4
+
+    - name: Upgrade all packages
+      ansible.builtin.yum:
+        name: '*'
+        state: latest
+
+    - name: Download the signing keys
+      ansible.builtin.get_url:
+        url: https://www.redhat.com/security/data/fd431d51.txt
+        dest: /etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+
+    - name: Make sure destination dir exists
+      file:
+        path: /etc/rhsm/ca
+        state: directory
+
+    - name: Copy the SSL certificates from Red Hat Subscription Management
+      ansible.builtin.get_url:
+        url: https://ftp.redhat.com/redhat/convert2rhel/redhat-uep.pem
+        dest: /etc/rhsm/ca/redhat-uep.pem
+
+    - name: Download a repository definition
+      ansible.builtin.get_url:
+        url: https://ftp.redhat.com/redhat/convert2rhel/7/convert2rhel.repo
+        dest: /etc/yum.repos.d/convert2rhel.repo
+
+    - name: Install Convert2RHEL
+      ansible.builtin.yum:
+        name: convert2rhel
+        state: present
+
+    - name: Clean duplicates packages
+      ansible.builtin.shell: package-cleanup -y --cleandupes
+
+    - name: Complete and cleanup yum transactions
+      ansible.builtin.shell: yum-complete-transaction --cleanup-only
+
+    - name: Set default kernel
+      ansible.builtin.shell: grubby --set-default /boot/vmlinuz-`rpm -q --qf "%{BUILDTIME}\t%{EVR}.%{ARCH}\n" kernel | sort -nr | head -1 | cut -f2`
+
+    - name: Reboot the system
+      ansible.builtin.reboot:
+        reboot_timeout: 900
+      register: back_again
+      ignore_errors: yes
+
+    - name: Wait additional 10 minutes and try to reconnect (in case of previous task timeout/connection issue)
+      ansible.builtin.wait_for_connection:
+        timeout: 600
+        # when reboot is successful "changed" is true
+      register: back_again2
+      when: not back_again.changed
+      ignore_errors: yes
+
+    - name: Wait additional 5 minutes as last resort (really slow env)
+      ansible.builtin.wait_for_connection:
+        timeout: 300
+      when: not back_again2.changed
+      register: back_again3
+
+    - name: Add convert2rhel.ini file
+      ansible.builtin.template:
+        src: convert2rhel.ini.j2
+        dest: /tmp/convert2rhel.ini
+        mode: 0600
+
+    - name: Run convert2RHEL for 7 major version
+      ansible.builtin.shell: convert2rhel -y -c /tmp/convert2rhel.ini --auto-attach
