@@ -58,9 +58,11 @@
 
     - name: Clean duplicates packages
       ansible.builtin.shell: package-cleanup -y --cleandupes
+      ignore_errors: yes
 
     - name: Complete and cleanup yum transactions
       ansible.builtin.shell: yum-complete-transaction --cleanup-only
+      ignore_errors: yes
 
     - name: Config firewalld module
       ansible.builtin.shell: sed -i -- 's/^CleanupModulesOnExit.*/CleanupModulesOnExit=no/g' /etc/firewalld/firewalld.conf && firewall-cmd --reload
