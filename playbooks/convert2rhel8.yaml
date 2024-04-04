@@ -56,6 +56,10 @@
         name: convert2rhel
         state: present
 
+    - name: Remove libvirt
+      ansible.builtin.shell: for i in $(rpm -qa |grep libvirt); do yum remove -y $i; done
+      ignore_erros: yes
+
     - name: Clean duplicates packages
       ansible.builtin.shell: package-cleanup -y --cleandupes
       ignore_errors: yes
