@@ -92,4 +92,4 @@
         mode: 0600
 
     - name: Run convert2RHEL for 7 major version
-      ansible.builtin.shell: convert2rhel -y -c /tmp/convert2rhel.ini --auto-attach
+      ansible.builtin.shell: convert2rhel -y --config-file /tmp/convert2rhel.ini --auto-attach
