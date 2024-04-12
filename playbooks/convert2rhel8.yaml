@@ -30,6 +30,7 @@
       ansible.builtin.yum:
         name: '*'
         state: latest
+        lock_timeout: 30
 
     - name: Download the signing keys
       ansible.builtin.get_url:
