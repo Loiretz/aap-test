@@ -26,7 +26,13 @@
             nameserver 8.8.8.8
             nameserver 8.8.4.4
 
-    - name: Upgrade all packages
+    - name: Clean yum packages
+      ansible.builtin.shell: yum clean all
+
+    - name: Clean yum packages
+      ansible.builtin.shell: rm -r /var/cache/yum
+
+    - name: Upgrade yum all packages
       ansible.builtin.yum:
         name: '*'
         state: latest
