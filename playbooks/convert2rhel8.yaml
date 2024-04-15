@@ -31,6 +31,7 @@
         name: '*'
         state: latest
         lock_timeout: 30
+        sslverify: false
 
     - name: Download the signing keys
       ansible.builtin.get_url:
@@ -56,6 +57,7 @@
       ansible.builtin.yum:
         name: convert2rhel
         state: present
+        sslverify: false
 
     - name: Remove libvirt
       ansible.builtin.shell: for i in $(rpm -qa |grep libvirt); do yum remove -y $i; done
