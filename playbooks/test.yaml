@@ -9,16 +9,16 @@
 
   tasks:
     - name: Download the signing keys
-    ansible.builtin.get_url:
+      ansible.builtin.get_url:
       url: https://www.redhat.com/security/data/fd431d51.txt
       dest: /etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
 
-  - name: Make sure destination dir exists
-    file:
-      path: /etc/rhsm/ca
-      state: directory
+    - name: Make sure destination dir exists
+      file:
+        path: /etc/rhsm/ca
+        state: directory
 
-  - name: Copy the SSL certificates from Red Hat Subscription Management
-    ansible.builtin.get_url:
-      url: https://ftp.redhat.com/redhat/convert2rhel/redhat-uep.pem
-      dest: /etc/rhsm/ca/redhat-uep.pem
+    - name: Copy the SSL certificates from Red Hat Subscription Management
+      ansible.builtin.get_url:
+        url: https://ftp.redhat.com/redhat/convert2rhel/redhat-uep.pem
+        dest: /etc/rhsm/ca/redhat-uep.pem
