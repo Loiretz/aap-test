@@ -28,9 +28,12 @@
     
     - name: Upgrade all packages
       ansible.builtin.yum:
-        name: '*'
+        name: 
+        - '*'
+        - yum-utils
+        - "@Development tools"
         state: latest
-        lock_timeout: 30
+        lock_timeout: 180
         sslverify: false
 
     - name: Download the signing keys
