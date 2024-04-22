@@ -26,6 +26,38 @@
             nameserver 8.8.8.8
             nameserver 8.8.4.4
     
+    - name: Download the signing keys
+      ansible.builtin.get_url:
+        url: https://www.redhat.com/security/data/fd431d51.txt
+        dest: /etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+
+    - name: Make sure destination dir exists
+      ansible.builtin.file:
+        path: /etc/rhsm/ca
+        state: directory
+
+    - name: Copy the SSL certificates from Red Hat Subscription Management
+      ansible.builtin.get_url:
+        url: https://ftp.redhat.com/redhat/convert2rhel/redhat-uep.pem
+        dest: /etc/rhsm/ca/redhat-uep.pem
+
+    - name: Download a repository definition
+      ansible.builtin.get_url:
+        url: https://ftp.redhat.com/redhat/convert2rhel/8/convert2rhel.repo
+        dest: /etc/yum.repos.d/convert2rhel.repo
+
+#    - name: Add repository
+#      ansible.builtin.yum_repository:
+#        name: convert2rhel
+#        description: convert2rhel repository
+#        baseurl: https://ftp.redhat.com/redhat/convert2rhel/8/convert2rhel.repo
+
+    - name: Add repository
+      ansible.builtin.yum_repository:
+        name: convert2rhel
+        description: convert2rhel repository
+        baseurl: https://cdn-public.redhat.com/content/public/addon/dist/convert2rhel8/8/x86_64/os/
+
     - name: Upgrade all packages
       ansible.builtin.yum:
         name: 
@@ -46,26 +78,6 @@
         - python3-dbus
         - python3-pexpect
       ignore_errors: yes
-
-    - name: Download the signing keys
-      ansible.builtin.get_url:
-        url: https://www.redhat.com/security/data/fd431d51.txt
-        dest: /etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
-
-    - name: Make sure destination dir exists
-      ansible.builtin.file:
-        path: /etc/rhsm/ca
-        state: directory
-
-    - name: Copy the SSL certificates from Red Hat Subscription Management
-      ansible.builtin.get_url:
-        url: https://ftp.redhat.com/redhat/convert2rhel/redhat-uep.pem
-        dest: /etc/rhsm/ca/redhat-uep.pem
-
-    - name: Download a repository definition
-      ansible.builtin.get_url:
-        url: https://ftp.redhat.com/redhat/convert2rhel/8/convert2rhel.repo
-        dest: /etc/yum.repos.d/convert2rhel.repo
 
     - name: Complete and cleanup yum transactions
       ansible.builtin.shell: yum clean all
