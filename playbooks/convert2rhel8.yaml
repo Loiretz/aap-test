@@ -36,13 +36,22 @@
         lock_timeout: 180
         sslverify: false
 
+    - name: install main dependencies via yum
+        ansible.builtin.yum:
+          state: present
+          name: 
+          - dnf-utils
+          - python3-six
+          - python3-dbus
+          - python3-pexpect
+
     - name: Download the signing keys
       ansible.builtin.get_url:
         url: https://www.redhat.com/security/data/fd431d51.txt
         dest: /etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
 
     - name: Make sure destination dir exists
-      file:
+      ansible.builtin.file:
         path: /etc/rhsm/ca
         state: directory
 

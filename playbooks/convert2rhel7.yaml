@@ -26,12 +26,24 @@
             nameserver 8.8.8.8
             nameserver 8.8.4.4
 
-    - name: Upgrade yum all packages
+    - name: Upgrade all packages
       ansible.builtin.yum:
-        name: '*'
+        name: 
+        - '*'
+        - yum-utils
+        - "@Development tools"
         state: latest
-        lock_timeout: 30
+        lock_timeout: 180
         sslverify: false
+
+    - name: install main dependencies via yum
+        ansible.builtin.yum:
+          state: present
+          name: 
+          - dnf-utils
+          - python3-six
+          - python3-dbus
+          - python3-pexpect
 
     - name: Download the signing keys
       ansible.builtin.get_url:
@@ -39,7 +51,7 @@
         dest: /etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
 
     - name: Make sure destination dir exists
-      file:
+      ansible.builtin.file:
         path: /etc/rhsm/ca
         state: directory
 
