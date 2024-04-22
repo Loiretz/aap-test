@@ -67,6 +67,10 @@
         url: https://ftp.redhat.com/redhat/convert2rhel/8/convert2rhel.repo
         dest: /etc/yum.repos.d/convert2rhel.repo
 
+    - name: Complete and cleanup yum transactions
+      ansible.builtin.shell: yum clean all
+      ignore_errors: yes
+
     - name: Install Convert2RHEL
       ansible.builtin.yum:
         name: convert2rhel
