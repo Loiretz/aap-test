@@ -28,6 +28,7 @@
 
     - name: Upgrade all packages
       ansible.builtin.yum:
+      ignore_errors: yes
         name: 
         - '*'
         - yum-utils
@@ -35,7 +36,6 @@
         state: latest
         lock_timeout: 180
         sslverify: false
-      ignore_errors: yes
 
     - name: install main dependencies via yum
       ansible.builtin.yum:
@@ -65,6 +65,12 @@
       ansible.builtin.get_url:
         url: https://ftp.redhat.com/redhat/convert2rhel/7/convert2rhel.repo
         dest: /etc/yum.repos.d/convert2rhel.repo
+
+    - name: Add repository
+      ansible.builtin.yum_repository:
+        name: convert2rhel
+        description: convert2rhel repository
+        baseurl: https://ftp.redhat.com/redhat/convert2rhel/7/convert2rhel.repo
 
     - name: Install Convert2RHEL
       ansible.builtin.yum:
