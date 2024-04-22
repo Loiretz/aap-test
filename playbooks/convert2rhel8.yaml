@@ -93,16 +93,17 @@
       ansible.builtin.shell: for i in $(rpm -qa |grep libvirt); do yum remove -y $i; done
       ignore_errors: yes
 
-    - name: Clean duplicates packages
-      ansible.builtin.shell: package-cleanup -y --cleandupes
-      ignore_errors: yes
+#    - name: Clean duplicates packages
+#      ansible.builtin.shell: package-cleanup -y --cleandupes
+#      ignore_errors: yes
 
-    - name: Complete and cleanup yum transactions
-      ansible.builtin.shell: yum-complete-transaction --cleanup-only
-      ignore_errors: yes
+#    - name: Complete and cleanup yum transactions
+#      ansible.builtin.shell: yum-complete-transaction --cleanup-only
+#      ignore_errors: yes
 
     - name: Config firewalld module
       ansible.builtin.shell: sed -i -- 's/^CleanupModulesOnExit.*/CleanupModulesOnExit=no/g' /etc/firewalld/firewalld.conf && firewall-cmd --reload
+      ignore_errors: true
 
     - name: Set default kernel
       ansible.builtin.shell: grubby --set-default /boot/vmlinuz-`rpm -q --qf "%{BUILDTIME}\t%{EVR}.%{ARCH}\n" kernel | sort -nr | head -1 | cut -f2`
