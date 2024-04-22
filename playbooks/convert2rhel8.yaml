@@ -28,6 +28,7 @@
     
     - name: Upgrade all packages
       ansible.builtin.yum:
+      ignore_errors: yes
         name: 
         - '*'
         - yum-utils
@@ -35,7 +36,6 @@
         state: latest
         lock_timeout: 180
         sslverify: false
-        ignore
 
     - name: install main dependencies via yum
       ansible.builtin.yum:
