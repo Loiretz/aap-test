@@ -35,6 +35,7 @@
         state: latest
         lock_timeout: 180
         sslverify: false
+        ignore_errors: yes
 
     - name: install main dependencies via yum
       ansible.builtin.yum:
