@@ -52,6 +52,10 @@
 #        description: convert2rhel repository
 #        baseurl: https://ftp.redhat.com/redhat/convert2rhel/8/convert2rhel.repo
 
+    - name: Complete and cleanup yum transactions
+      ansible.builtin.shell: yum clean all
+      ignore_errors: yes
+
     - name: Add repository
       ansible.builtin.yum_repository:
         name: convert2rhel
