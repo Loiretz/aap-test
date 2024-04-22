@@ -28,7 +28,6 @@
 
     - name: Upgrade all packages
       ansible.builtin.yum:
-      ignore_errors: yes
         name: 
         - '*'
         - yum-utils
@@ -36,6 +35,7 @@
         state: latest
         lock_timeout: 180
         sslverify: false
+      ignore_errors: yes
 
     - name: install main dependencies via yum
       ansible.builtin.yum:
@@ -45,6 +45,8 @@
         - python3-six
         - python3-dbus
         - python3-pexpect
+      ignore_errors: yes
+        
 
     - name: Download the signing keys
       ansible.builtin.get_url:
