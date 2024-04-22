@@ -45,7 +45,7 @@
         - python3-six
         - python3-dbus
         - python3-pexpect
-        ignore_errors: yes
+      ignore_errors: yes
 
     - name: Download the signing keys
       ansible.builtin.get_url:
