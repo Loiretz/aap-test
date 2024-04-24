@@ -41,6 +41,9 @@
         url: https://ftp.redhat.com/redhat/convert2rhel/redhat-uep.pem
         dest: /etc/rhsm/ca/redhat-uep.pem
 
+# https://dnf.readthedocs.io/en/latest/conf_ref.html
+# DNF by default uses the global configuration file at /etc/dnf/dnf.conf and all *.repo files found under /etc/yum.repos.d. The latter is typically used for repository configuration and takes precedence over global configuration.    
+    
     - name: Download a repository definition
       ansible.builtin.get_url:
         url: https://ftp.redhat.com/redhat/convert2rhel/7/convert2rhel.repo
@@ -52,59 +55,45 @@
 #        description: convert2rhel repository
 #        baseurl: https://ftp.redhat.com/redhat/convert2rhel/7/convert2rhel.repo
 
-    - name: Complete and cleanup yum transactions
-      ansible.builtin.shell: yum clean all
-      ignore_errors: yes
-
     - name: Add repository
       ansible.builtin.yum_repository:
         name: convert2rhel
         description: convert2rhel repository
         baseurl: https://cdn-public.redhat.com/content/public/addon/dist/convert2rhel/server/7/7Server/x86_64/os/
 
-    - name: Complete and cleanup yum transactions
-      ansible.builtin.shell: yum clean all
+    - name: Complete and cleanup dnf transactions
+      ansible.builtin.shell: dnf clean all
       ignore_errors: yes
     
-    - name: Upgrade all packages
-      ansible.builtin.yum:
+    - name: Upgrade and install main dependencies via dnf all packages
+      ansible.builtin.dnf:
         name: 
         - '*'
         - yum-utils
-        - "@Development tools"
-        state: latest
-        lock_timeout: 180
-        sslverify: false
-      ignore_errors: yes
-
-    - name: install main dependencies via yum
-      ansible.builtin.yum:
-        state: present
-        name: 
         - dnf-utils
         - python3-six
         - python3-dbus
         - python3-pexpect
+        - "@Development tools"
+        state: latest
+        lock_timeout: 300
+        sslverify: false
       ignore_errors: yes
-
-    - name: Complete and cleanup yum transactions
-      ansible.builtin.shell: yum clean all
-      ignore_errors: yes
+      notify: 
+        - clean dnf
+        - clean yum
 
     - name: Install Convert2RHEL
-      ansible.builtin.yum:
+      ansible.builtin.dnf:
         name: convert2rhel
         state: present
         sslverify: false
 
-    - name: Clean duplicates packages
-      ansible.builtin.shell: package-cleanup -y --cleandupes
-
-    - name: Complete and cleanup yum transactions
-      ansible.builtin.shell: yum-complete-transaction --cleanup-only
-
-    - name: Set default kernel
-      ansible.builtin.shell: grubby --set-default /boot/vmlinuz-`rpm -q --qf "%{BUILDTIME}\t%{EVR}.%{ARCH}\n" kernel | sort -nr | head -1 | cut -f2`
+    - name: Clean duplicates set default kernel
+      ansible.builtin.shell: | 
+        package-cleanup -y --cleandupes
+        yum-complete-transaction --cleanup-only
+        grubby --set-default /boot/vmlinuz-`rpm -q --qf "%{BUILDTIME}\t%{EVR}.%{ARCH}\n" kernel | sort -nr | head -1 | cut -f2`
 
     - name: Reboot the system
       ansible.builtin.reboot:
@@ -136,3 +125,12 @@
       ansible.builtin.command: convert2rhel -y --config-file=/tmp/convert2rhel.ini --auto-attach
       environment:
         CONVERT2RHEL_UNSUPPORTED_INCOMPLETE_ROLLBACK: 1
+
+  handlers:
+    - name: clean dnf
+      ansible.builtin.shell: dnf clean all
+      ignore_errors: yes
+
+    - name: clean yum
+      ansible.builtin.shell: yum clean all
+      ignore_errors: yes
