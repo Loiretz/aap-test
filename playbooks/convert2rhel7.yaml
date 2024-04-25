@@ -68,12 +68,8 @@
         - '*'
         - yum-utils
         - "@Development tools"
-        disablerepo: 
-        - dnf-utils
-        - python3-six
-        - python3-dbus
-        - python3-pexpect
         state: present
+        exclude: dnf*, dnf-utils, python3-six, python3-dbus, python3-pexpect
         lock_timeout: 300
         sslverify: false
         skip_broken: true
