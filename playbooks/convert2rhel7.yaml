@@ -58,11 +58,6 @@
 #        name: convert2rhel
 #        description: convert2rhel repository
 #        baseurl: https://ftp.redhat.com/redhat/convert2rhel/7/convert2rhel.repo
-    
-    - name: Copy the SSL certificate to solve any CA problems regarding yum packages.
-      ansible.builtin.get_url:
-        url:
-        dest: 
 
     - name: Add repository
       ansible.builtin.yum_repository:
