@@ -41,6 +41,10 @@
         url: https://ftp.redhat.com/redhat/convert2rhel/redhat-uep.pem
         dest: /etc/rhsm/ca/redhat-uep.pem
 
+    - name: Add PEM certificate to chain 
+      ansible.builtin.shell: openssl x509 -noout -hash -in /etc/rhsm/ca/redhat-uep.pem 
+
+
 # https://dnf.readthedocs.io/en/latest/conf_ref.html
 # DNF by default uses the global configuration file at /etc/dnf/dnf.conf and all *.repo files found under /etc/yum.repos.d. The latter is typically used for repository configuration and takes precedence over global configuration.    
     
@@ -54,12 +58,18 @@
 #        name: convert2rhel
 #        description: convert2rhel repository
 #        baseurl: https://ftp.redhat.com/redhat/convert2rhel/7/convert2rhel.repo
+    
+    - name: Copy the SSL certificate to solve any CA problems regarding yum packages.
+      ansible.builtin.get_url:
+        url:
+        dest: 
 
     - name: Add repository
       ansible.builtin.yum_repository:
         name: convert2rhel
         description: convert2rhel repository
         baseurl: https://cdn-public.redhat.com/content/public/addon/dist/convert2rhel/server/7/7Server/x86_64/os/
+        skip_if_unavailable: true 
       notify: 
         - clean yum
     
