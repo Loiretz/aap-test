@@ -53,24 +53,22 @@
         url: https://ftp.redhat.com/redhat/convert2rhel/7/convert2rhel.repo
         dest: /etc/yum.repos.d/convert2rhel.repo
 
-#    - name: Add repository
-#      ansible.builtin.yum_repository:
-#        name: convert2rhel
-#        description: convert2rhel repository
-#        baseurl: https://ftp.redhat.com/redhat/convert2rhel/7/convert2rhel.repo
-
     - name: Add repository
       ansible.builtin.yum_repository:
         name: convert2rhel
         description: convert2rhel repository
         baseurl: https://cdn-public.redhat.com/content/public/addon/dist/convert2rhel/server/7/7Server/x86_64/os/
         skip_if_unavailable: true 
-        disablerepo: "dnf,dnf-utils,efibootmgr,python3-six,python3-dbus,python3-pexpect"
       notify: 
         - clean yum
     
     - name: Upgrade and install main dependencies via yum all packages
       ansible.builtin.yum:
+        disablerepo: 
+        - dnf-utils
+        - python3-six
+        - python3-dbus
+        - python3-pexpect
         name: 
         - '*'
         - yum-utils
