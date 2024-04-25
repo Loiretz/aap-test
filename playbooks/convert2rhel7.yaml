@@ -64,18 +64,19 @@
     
     - name: Upgrade and install main dependencies via yum all packages
       ansible.builtin.yum:
+        name: 
+        - '*'
+        - yum-utils
+        - "@Development tools"
         disablerepo: 
         - dnf-utils
         - python3-six
         - python3-dbus
         - python3-pexpect
-        name: 
-        - '*'
-        - yum-utils
-        - "@Development tools"
         state: present
         lock_timeout: 300
         sslverify: false
+        skip_broken: true
       ignore_errors: true
       notify: 
         - clean yum
