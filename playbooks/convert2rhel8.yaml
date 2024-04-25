@@ -72,6 +72,7 @@
         - yum-utils
         - "@Development tools"
         state: latest
+        exclude: zabbix*
         lock_timeout: 180
         sslverify: false
       ignore_errors: yes

@@ -62,10 +62,6 @@
       notify: 
         - clean yum
       
-    - name: clean yum
-      ansible.builtin.shell: yum clean all
-      ignore_errors: true
-    
     - name: Upgrade and install main dependencies via yum all packages
       ansible.builtin.yum:
         name: 
@@ -73,13 +69,17 @@
         - yum-utils
         - "@Development tools"
         state: latest
-        exclude: dnf*, dnf-utils, python3-six, python3-dbus, python3-pexpect
+        exclude: dnf*, dnf-utils, python3-six, python3-dbus, python3-pexpect, zabbix*
         lock_timeout: 300
         sslverify: false
         skip_broken: true
       ignore_errors: true
       notify: 
         - clean yum
+
+    - name: clean yum
+      ansible.builtin.shell: yum clean all
+      ignore_errors: true
 
     - name: Install Convert2RHEL
       ansible.builtin.yum:
