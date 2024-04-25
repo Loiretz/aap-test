@@ -65,6 +65,7 @@
         description: convert2rhel repository
         baseurl: https://cdn-public.redhat.com/content/public/addon/dist/convert2rhel/server/7/7Server/x86_64/os/
         skip_if_unavailable: true 
+        disablerepo: "dnf,dnf-utils,efibootmgr,python3-six,python3-dbus,python3-pexpect"
       notify: 
         - clean yum
     
@@ -77,11 +78,10 @@
         state: present
         lock_timeout: 300
         sslverify: false
-        disablerepo: "dnf,dnf-utils,efibootmgr,python3-six,python3-dbus,python3-pexpect"
       ignore_errors: true
       notify: 
         - clean yum
-        
+
     - name: Install Convert2RHEL
       ansible.builtin.yum:
         name: convert2rhel
