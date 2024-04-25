@@ -73,17 +73,15 @@
         name: 
         - '*'
         - yum-utils
-        - python3-six
-        - python3-dbus
-        - python3-pexpect
         - "@Development tools"
-        state: latest
+        state: present
         lock_timeout: 300
         sslverify: false
+        disablerepo: "dnf,dnf-utils,efibootmgr,python3-six,python3-dbus,python3-pexpect"
       ignore_errors: true
       notify: 
         - clean yum
-
+        
     - name: Install Convert2RHEL
       ansible.builtin.yum:
         name: convert2rhel
