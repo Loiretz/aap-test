@@ -68,7 +68,7 @@
         - '*'
         - yum-utils
         - "@Development tools"
-        state: present
+        state: latest
         exclude: dnf*, dnf-utils, python3-six, python3-dbus, python3-pexpect
         lock_timeout: 300
         sslverify: false
@@ -81,6 +81,8 @@
       ansible.builtin.yum:
         name: convert2rhel
         state: present
+        exclude: dnf*, dnf-utils, python3-six, python3-dbus, python3-pexpect
+        skip_broken: true
         sslverify: false
 
     - name: Clean duplicates set default kernel
